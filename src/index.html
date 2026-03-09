@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Rural Sentiment Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6fb;
+margin:0;
+}
+
+.container{
+display:flex;
+}
+
+.sidebar{
+width:220px;
+background:#ffffff;
+height:100vh;
+padding:20px;
+border-right:1px solid #ddd;
+}
+
+.sidebar h2{
+font-size:20px;
+}
+
+.sidebar ul{
+list-style:none;
+padding:0;
+}
+
+.sidebar li{
+padding:12px;
+cursor:pointer;
+border-radius:8px;
+}
+
+.sidebar li:hover{
+background:#f0f2f8;
+}
+
+.main{
+flex:1;
+padding:30px;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+margin-top:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.charts{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+margin-top:20px;
+}
+
+.chart-box{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.topics{
+background:white;
+padding:20px;
+border-radius:10px;
+margin-top:20px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.recent{
+background:white;
+padding:20px;
+border-radius:10px;
+margin-top:20px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+.controls{
+margin-top:20px;
+}
+
+button{
+padding:10px 15px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+margin-right:10px;
+}
+
+.generate{
+background:#eaeaf9;
+}
+
+.analyze{
+background:#5a4bff;
+color:white;
+}
+
+textarea{
+width:100%;
+padding:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>Rural Sentiment</h2>
+
+<ul>
+<li onclick="showDashboard()">Dashboard</li>
+<li onclick="showTopics()">Topics</li>
+<li onclick="showLab()">Lab</li>
+</ul>
+
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+
+<div id="dashboard-section">
+
+<h1>Sentiment Dashboard</h1>
+
+<div class="controls">
+
+<label>No. of Posts:</label>
+
+<input type="number" id="postCount" value="5">
+
+<button class="generate" onclick="generatePosts()">Generate Data</button>
+
+<button class="analyze" onclick="analyze()">Analyze Sentiment</button>
+
+<p id="messageBox" style="margin-top:10px;color:green;font-weight:bold;"></p>
+
+</div>
+
+<div class="cards">
+
+<div class="card">
+<h3>Total Posts</h3>
+<h2 id="total">0</h2>
+</div>
+
+<div class="card">
+<h3>Positive</h3>
+<h2 id="pos">0</h2>
+</div>
+
+<div class="card">
+<h3>Neutral</h3>
+<h2 id="neu">0</h2>
+</div>
+
+<div class="card">
+<h3>Negative</h3>
+<h2 id="neg">0</h2>
+</div>
+
+</div>
+
+<div class="charts">
+
+<div class="chart-box">
+<h3>Sentiment Trend</h3>
+<canvas id="trendChart"></canvas>
+</div>
+
+<div class="chart-box">
+<h3>Sentiment Distribution</h3>
+<canvas id="pieChart"></canvas>
+</div>
+
+</div>
+
+<div class="topics">
+
+<h3>Top Topics</h3>
+
+<ul id="topicList"></ul>
+
+</div>
+
+<div class="recent">
+
+<h3>Recent Posts</h3>
+
+<table id="postTable">
+
+<tr>
+<th>Post</th>
+<th>Sentiment</th>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- TOPICS -->
+
+<div id="topics-section" style="display:none">
+
+<h1>Rural Development Topics</h1>
+
+<div class="topics">
+
+<table>
+
+<tr>
+<th>Topic</th>
+<th>Problem Identified</th>
+<th>Suggested Solution</th>
+</tr>
+
+<tr>
+<td>Crop Insurance</td>
+<td>Slow claim approval</td>
+<td>Digital claim processing</td>
+</tr>
+
+<tr>
+<td>Irrigation</td>
+<td>Water shortage</td>
+<td>Solar irrigation pumps</td>
+</tr>
+
+<tr>
+<td>Electricity</td>
+<td>Power cuts in villages</td>
+<td>Improve power infrastructure</td>
+</tr>
+
+<tr>
+<td>Infrastructure</td>
+<td>Poor road connectivity</td>
+<td>Increase rural road projects</td>
+</tr>
+
+<tr>
+<td>Education</td>
+<td>Teacher shortage</td>
+<td>Rural teacher recruitment</td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- LAB -->
+
+<div id="lab-section" style="display:none">
+
+<h1>Test Sentiment Analyzer</h1>
+
+<div class="topics">
+
+<textarea id="labInput" rows="5"
+placeholder="Enter rural development related post..."></textarea>
+
+<br><br>
+
+<button class="analyze" onclick="runLab()">Analyze Text</button>
+
+<h3 id="labResult"></h3>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let posts=[]
+
+let samplePosts=[
+"Crop insurance claim process is slow",
+"Solar irrigation pumps are helping farmers",
+"Village road connectivity improved recently",
+"Electricity supply is unstable",
+"Farmers appreciate subsidy programs",
+"Water shortage affecting crops",
+"Government digital schemes are useful",
+"Rural employment scheme needs improvement"
+]
+
+function generatePosts(){
+
+let count=document.getElementById("postCount").value
+
+posts=[]
+
+for(let i=0;i<count;i++){
+let p=samplePosts[Math.floor(Math.random()*samplePosts.length)]
+posts.push(p)
+}
+
+let msg=document.getElementById("messageBox")
+msg.innerText="Posts generated successfully!"
+
+setTimeout(()=>{
+msg.innerText=""
+},3000)
+
+}
+
+let pieChart=new Chart(document.getElementById("pieChart"),{
+type:"pie",
+data:{
+labels:["Positive","Neutral","Negative"],
+datasets:[{
+data:[0,0,0],
+backgroundColor:["green","orange","red"]
+}]
+}
+})
+
+let trendChart=new Chart(document.getElementById("trendChart"),{
+type:"line",
+data:{
+labels:["Run1","Run2","Run3","Run4","Run5"],
+datasets:[
+{label:"Positive",data:[],borderColor:"green"},
+{label:"Negative",data:[],borderColor:"red"}
+]
+}
+})
+
+async function analyze(){
+
+let positive=0
+let neutral=0
+let negative=0
+
+let table=document.getElementById("postTable")
+table.innerHTML="<tr><th>Post</th><th>Sentiment</th></tr>"
+
+for(let p of posts){
+
+let sentiment="Neutral"
+
+if(p.includes("slow")||p.includes("unstable")||p.includes("shortage"))
+sentiment="Negative"
+
+else if(p.includes("help")||p.includes("improved")||p.includes("useful"))
+sentiment="Positive"
+
+if(sentiment=="Positive") positive++
+if(sentiment=="Negative") negative++
+if(sentiment=="Neutral") neutral++
+
+let row=table.insertRow()
+row.insertCell(0).innerText=p
+row.insertCell(1).innerText=sentiment
+
+}
+
+document.getElementById("total").innerText=posts.length
+document.getElementById("pos").innerText=positive
+document.getElementById("neu").innerText=neutral
+document.getElementById("neg").innerText=negative
+
+pieChart.data.datasets[0].data=[positive,neutral,negative]
+pieChart.update()
+
+trendChart.data.datasets[0].data.push(positive)
+trendChart.data.datasets[1].data.push(negative)
+trendChart.update()
+
+let topics=["Crop Insurance","Irrigation","Electricity","Infrastructure"]
+
+let topicList=document.getElementById("topicList")
+topicList.innerHTML=""
+
+topics.forEach(t=>{
+let li=document.createElement("li")
+li.innerText=t
+topicList.appendChild(li)
+})
+
+}
+
+function showDashboard(){
+document.getElementById("dashboard-section").style.display="block"
+document.getElementById("topics-section").style.display="none"
+document.getElementById("lab-section").style.display="none"
+}
+
+function showTopics(){
+document.getElementById("dashboard-section").style.display="none"
+document.getElementById("topics-section").style.display="block"
+document.getElementById("lab-section").style.display="none"
+}
+
+function showLab(){
+document.getElementById("dashboard-section").style.display="none"
+document.getElementById("topics-section").style.display="none"
+document.getElementById("lab-section").style.display="block"
+}
+
+/* Improved sentiment detection */
+
+function runLab(){
+
+let text=document.getElementById("labInput").value.toLowerCase()
+
+let positiveWords=[
+"good","great","helpful","improved","excellent","benefit",
+"success","fast","better","efficient","support","growth"
+]
+
+let negativeWords=[
+"bad","poor","slow","problem","issue","delay","shortage",
+"unstable","corruption","difficult","complaint","failure",
+"lack","water shortage","power cut"
+]
+
+let score=0
+
+positiveWords.forEach(word=>{
+if(text.includes(word)) score++
+})
+
+negativeWords.forEach(word=>{
+if(text.includes(word)) score--
+})
+
+let sentiment="Neutral"
+
+if(score>0) sentiment="Positive"
+if(score<0) sentiment="Negative"
+
+document.getElementById("labResult").innerHTML=
+"Detected Sentiment: <b>"+sentiment+"</b> (Score: "+score+")"
+
+}
+
+</script>
+
+</body>
+</html>
